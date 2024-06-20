@@ -11,7 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 exports.__esModule = true;
-exports.groupByProperty = exports.characters = exports.calculateProductPrice = exports.mergeSortedArrays = exports.validateEmail = exports.sortByName = exports.filterByAge = exports.removeDuplicates = exports.countVowels = exports.getLargestNumber = exports.getSum = exports.getSumOfNumbers = void 0;
+exports.aggregateOrders = exports.groupByProperty = exports.characters = exports.calculateProductPrice = exports.mergeSortedArrays = exports.sortByName = exports.filterByAge = exports.removeDuplicates = exports.countVowels = exports.getLargestNumber = exports.getSum = exports.getSumOfNumbers = void 0;
 // -----------------------------------------------
 // Sum of an Array: Write a function that takes an array of numbers as input and returns the sum of all elements.
 var getSumOfNumbers = function (arr) {
@@ -21,16 +21,21 @@ var getSumOfNumbers = function (arr) {
     return sum;
 };
 exports.getSumOfNumbers = getSumOfNumbers;
-// console.log(getSumOfNumbers([1,2,3,4,5,20]));
+console.log((0, exports.getSumOfNumbers)([1, 2, 3, 4, 5, 20]));
 // -----------------------------------------------
 // Write a function to get the sum of numbers in the given array. The array elements can be of any export type. Only sum the numbers.
 var getSum = function (arr) {
     // ...
     var sum = 0;
+    for (var i = 0; i < arr.length; i++) {
+        if (typeof arr[i] === "number") {
+            sum += arr[i];
+        }
+    }
     return sum;
 };
 exports.getSum = getSum;
-// console.log(getSum([1,'a',2,4,2,true]));
+// console.log(getSum([1, "a", 2, 4, 2, true]));
 // -----------------------------------------------
 // Write a function that takes an array of numbers as input and returns the largest number.
 var getLargestNumber = function (arr) {
@@ -85,16 +90,28 @@ exports.sortByName = sortByName;
 // console.log(sortByName([{name: 'uzumaki'}, {name: 'sasuke'}, {name: 'sakura'}, {name: 'hinata'}, {name: 'akatski'}]));
 // -----------------------------------------------
 // Write a function that takes a string as input. Validate if the string has a valid email format (contains "@" and "."). Return true if valid, false otherwise.
-var validateEmail = function (email) {
-    // ...
-    if (email.includes("@") && email.includes(".")) {
-        return true;
+// export const validateEmail = (email: string): boolean => {
+//   //   // ...
+// };
+// console.log(validateEmail("shamil@gmail.com"));
+function shuffleArray(array) {
+    var _a;
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        _a = [array[j], array[i]], array[i] = _a[0], array[j] = _a[1];
     }
-    else
-        return false;
-};
-exports.validateEmail = validateEmail;
-// console.log(validateEmail('shamil@gmail.com'));
+}
+var teams = ["Team A", "Team B", "Team C", "Team D"];
+// Shuffle the teams array
+shuffleArray(teams);
+var semiFinals = [
+    { team1: teams[0], team2: teams[1] },
+    { team1: teams[2], team2: teams[3] }
+];
+console.log("Semi-Final Matchups:");
+semiFinals.forEach(function (match, index) {
+    console.log("Match ".concat(index + 1, ": ").concat(match.team1, " vs ").concat(match.team2));
+});
 // -----------------------------------------------
 // Write a function that takes two sorted arrays of numbers as input and returns a new array containing all elements merged and sorted in ascending order.
 var mergeSortedArrays = function (arr1, arr2) {
@@ -173,26 +190,22 @@ exports.characters = [
 var groupByProperty = function (arr, property) {
     // ...
     var newObj = {};
-    var famList = [];
-    arr.filter(function (name) { return famList.push(name.family); });
     arr.map(function (item) {
-        return famList.map(function (fam) {
-            var _a;
-            var _b;
-            if (fam === item.family) {
-                var itemList = (_b = newObj[fam]) === null || _b === void 0 ? void 0 : _b.find(function (i) { return i.name === item.name; });
-                console.log(itemList);
-                if (itemList) {
-                    newObj[fam].push([{
-                            name: item.name,
-                            family: item.family
-                        }]);
-                }
-                else {
-                    newObj = __assign(__assign({}, newObj), (_a = {}, _a[fam] = [{ name: item.name, family: item.family }], _a));
-                }
-            }
-        });
+        var _a;
+        var _b;
+        var itemList = (_b = newObj[item[property]]) === null || _b === void 0 ? void 0 : _b.find(function (i) { return item; });
+        if (itemList) {
+            console.log("here");
+            newObj[item[property]].push([
+                {
+                    name: item.name,
+                    family: item.family
+                },
+            ]);
+        }
+        else {
+            newObj = __assign(__assign({}, newObj), (_a = {}, _a[item[property]] = [{ name: item.name, family: item.family }], _a));
+        }
     });
     //  arr.map((option) => {
     //   console.log("starting", option)
@@ -206,7 +219,152 @@ var groupByProperty = function (arr, property) {
     return newObj;
 };
 exports.groupByProperty = groupByProperty;
-console.log(JSON.stringify((0, exports.groupByProperty)(exports.characters, "family")));
-// export const aggregateOrders = <T extends TAggregareOrdersArg>(arr: T[], customerId: number): TAggregareOrdersRes | null => {
-//   // ...
-// }
+// console.log(JSON.stringify(groupByProperty(characters, "family")));
+// -----------------------------------------------
+// Write a function to aggregate order data for reporting:
+// You have a JSON array representing customer orders. Each order object has properties like "customerId" "items" (array of product objects), and "totalPrice."
+// Write a function that takes the JSON array and a specific customer ID as input.
+// Return a new object containing:
+// - The customer ID
+// - Total number of orders placed by the customer
+// - Total amount spent by the customer (across all orders)
+// - Most frequently purchased product (by quantity) and its total quantity
+var item = [
+    {
+        customerId: 1,
+        items: [
+            {
+                name: "Laptop",
+                price: 1200
+            },
+            {
+                name: "Mouse",
+                price: 25
+            },
+        ],
+        totalPrice: 0
+    },
+    {
+        customerId: 1,
+        items: [
+            {
+                name: "Laptop",
+                price: 1200
+            },
+        ],
+        totalPrice: 0
+    },
+    {
+        customerId: 1,
+        items: [
+            {
+                name: "Laptop",
+                price: 1200
+            },
+        ],
+        totalPrice: 0
+    },
+    {
+        customerId: 1,
+        items: [
+            {
+                name: "Laptop",
+                price: 1200
+            },
+        ],
+        totalPrice: 0
+    },
+    {
+        customerId: 1,
+        items: [
+            {
+                name: "Mouse",
+                price: 1200
+            },
+        ],
+        totalPrice: 0
+    },
+    {
+        customerId: 1,
+        items: [
+            {
+                name: "Laptop",
+                price: 1200
+            },
+        ],
+        totalPrice: 0
+    },
+    {
+        customerId: 2,
+        items: [
+            {
+                name: "Smartphone",
+                price: 800
+            },
+        ],
+        totalPrice: 0
+    },
+    {
+        customerId: 3,
+        items: [
+            {
+                name: "Tablet",
+                price: 300
+            },
+            {
+                name: "Keyboard",
+                price: 50
+            },
+        ],
+        totalPrice: 0
+    },
+];
+var aggregateOrders = function (arr, customerId) {
+    // ...
+    var newObjet = {
+        customerId: 0,
+        totalAmount: 0,
+        totalOrders: 0,
+        mostFrequentProduct: { name: "", price: 0, quantity: 0 }
+    };
+    var allProductTotalPrice = 0;
+    var customerTotalOrder = 0;
+    var frequentlyBuyProductNames = [];
+    var result = {};
+    arr.forEach(function (option) {
+        if (option.customerId === customerId) {
+            option.items.map(function (product) { return (allProductTotalPrice += product.price); });
+            customerTotalOrder += option.items.length;
+            option.items.map(function (name) { return frequentlyBuyProductNames.push(name.name); });
+        }
+    });
+    frequentlyBuyProductNames.forEach(function (element) {
+        result[element] = result[element] ? result[element] + 1 : 1;
+        var frequentlyPurchasedCount = Object.values(result);
+        var maxQuantity = Math.max.apply(Math, frequentlyPurchasedCount);
+        var frequentlyPurchasedProduct = Object.keys(result).reduce(function (a, b) {
+            return result[a] > result[b] ? a : b;
+        });
+        var frequentlyPurchasedProductTotal = 0;
+        arr.forEach(function (option) {
+            option.items.forEach(function (product) {
+                if (frequentlyPurchasedProduct === product.name) {
+                    frequentlyPurchasedProductTotal += product.price;
+                }
+            });
+        });
+        newObjet = {
+            customerId: customerId,
+            totalOrders: customerTotalOrder,
+            totalAmount: allProductTotalPrice,
+            mostFrequentProduct: {
+                name: frequentlyPurchasedProduct,
+                price: frequentlyPurchasedProductTotal,
+                quantity: maxQuantity
+            }
+        };
+    });
+    return newObjet;
+};
+exports.aggregateOrders = aggregateOrders;
+console.log((0, exports.aggregateOrders)(item, 1));

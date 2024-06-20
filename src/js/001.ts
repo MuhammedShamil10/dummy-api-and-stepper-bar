@@ -6,17 +6,22 @@ export const getSumOfNumbers = (arr: number[]): number => {
   arr.map((number) => (sum += number));
   return sum;
 };
-// console.log(getSumOfNumbers([1,2,3,4,5,20]));
+console.log(getSumOfNumbers([1, 2, 3, 4, 5, 20]));
 
 // -----------------------------------------------
 // Write a function to get the sum of numbers in the given array. The array elements can be of any export type. Only sum the numbers.
 export const getSum = (arr: any[]): number => {
   // ...
   let sum = 0;
+  for (let i = 0; i < arr.length; i++) {
+    if (typeof arr[i] === "number") {
+      sum += arr[i];
+    }
+  }
 
   return sum;
 };
-// console.log(getSum([1,'a',2,4,2,true]));
+// console.log(getSum([1, "a", 2, 4, 2, true]));
 
 // -----------------------------------------------
 // Write a function that takes an array of numbers as input and returns the largest number.
@@ -59,7 +64,7 @@ export const removeDuplicates = (arr: number[]): number[] => {
   return removedDuplicatesNumber;
   // return removedDuplicatesNumber
 };
-// console.log(removeDuplicates([1,2,3,5,3,1,5]));
+// console.log(removeDuplicates([1, 2, 3, 5, 3, 1, 5]));
 
 // -----------------------------------------------
 // Write a function that takes an array of objects (each object has a property "age") and a minimum age as input. Return a new array containing only objects with an age greater than or equal to the minimum age.
@@ -95,19 +100,15 @@ export const sortByName = <T extends TSortByNameArg>(arr: T[]): T[] => {
 
 // -----------------------------------------------
 // Write a function that takes a string as input. Validate if the string has a valid email format (contains "@" and "."). Return true if valid, false otherwise.
-export const validateEmail = (email: string): boolean => {
-  // ...
-  if (email.includes("@") && email.includes(".")) {
-    return true;
-  } else return false;
-};
-// console.log(validateEmail('shamil@gmail.com'));
+// export const validateEmail = (email: string): boolean => {
+//   //   // ...
+// };
+// console.log(validateEmail("shamil@gmail.com"));
 
 // -----------------------------------------------
 // Write a function that takes two sorted arrays of numbers as input and returns a new array containing all elements merged and sorted in ascending order.
 export const mergeSortedArrays = (arr1: number[], arr2: number[]): number[] => {
   // ...
-
   // let newArr: number[] = [];
   // for(let i = 0; i < arr1.length; i++) {
   //   newArr.push(arr1[i])
@@ -204,28 +205,25 @@ export const groupByProperty = (
 ): Record<string, any[]> => {
   // ...
   let newObj: Record<string, any[]> = {};
-  let famList: string[] = [];
-  arr.filter((name) => famList.push(name.family));
 
-  arr.map((item) =>
-    famList.map((fam) => {
-      if (fam === item.family) {
-        let itemList = newObj[fam]?.find((i) => i.name === item.name);
-        console.log(itemList);
-        if (itemList) {          
-          newObj[fam].push([{
-            name: item.name,
-            family: item.family,
-          }]);
-        } else {
-          newObj = {
-            ...newObj,
-            [fam]: [{ name: item.name, family: item.family }],
-          };
-        }
-      }
-    })
-  );
+  arr.map((item) => {
+    let itemList = newObj[item[property]]?.find((i) => item);
+    if (itemList) {
+      console.log("here");
+
+      newObj[item[property]].push([
+        {
+          name: item.name,
+          family: item.family,
+        },
+      ]);
+    } else {
+      newObj = {
+        ...newObj,
+        [item[property]]: [{ name: item.name, family: item.family }],
+      };
+    }
+  });
 
   //  arr.map((option) => {
   //   console.log("starting", option)
@@ -238,7 +236,7 @@ export const groupByProperty = (
   // });
   return newObj;
 };
-console.log(JSON.stringify(groupByProperty(characters, "family")));
+// console.log(JSON.stringify(groupByProperty(characters, "family")));
 
 // -----------------------------------------------
 // Write a function to aggregate order data for reporting:
@@ -249,6 +247,98 @@ console.log(JSON.stringify(groupByProperty(characters, "family")));
 // - Total number of orders placed by the customer
 // - Total amount spent by the customer (across all orders)
 // - Most frequently purchased product (by quantity) and its total quantity
+
+const item = [
+  {
+    customerId: 1,
+    items: [
+      {
+        name: "Laptop",
+        price: 1200,
+      },
+      {
+        name: "Mouse",
+        price: 25,
+      },
+    ],
+    totalPrice: 0,
+  },
+  {
+    customerId: 1,
+    items: [
+      {
+        name: "Laptop",
+        price: 1200,
+      },
+    ],
+    totalPrice: 0,
+  },
+  {
+    customerId: 1,
+    items: [
+      {
+        name: "Laptop",
+        price: 1200,
+      },
+    ],
+    totalPrice: 0,
+  },
+  {
+    customerId: 1,
+    items: [
+      {
+        name: "Laptop",
+        price: 1200,
+      },
+    ],
+    totalPrice: 0,
+  },
+  {
+    customerId: 1,
+    items: [
+      {
+        name: "Mouse",
+        price: 1200,
+      },
+    ],
+    totalPrice: 0,
+  },
+  {
+    customerId: 1,
+    items: [
+      {
+        name: "Laptop",
+        price: 1200,
+      },
+    ],
+    totalPrice: 0,
+  },
+  {
+    customerId: 2,
+    items: [
+      {
+        name: "Smartphone",
+        price: 800,
+      },
+    ],
+    totalPrice: 0,
+  },
+  {
+    customerId: 3,
+    items: [
+      {
+        name: "Tablet",
+        price: 300,
+      },
+      {
+        name: "Keyboard",
+        price: 50,
+      },
+    ],
+    totalPrice: 0,
+  },
+];
+
 export type Product = {
   name: string;
   price: number;
@@ -264,9 +354,67 @@ export type TAggregareOrdersRes = {
   customerId: number;
   totalOrders: number;
   totalAmount: number;
-  mostFrequentProduct?: Product;
+  mostFrequentProduct?: Product & { quantity: number };
 };
 
-// export const aggregateOrders = <T extends TAggregareOrdersArg>(arr: T[], customerId: number): TAggregareOrdersRes | null => {
-//   // ...
-// }
+export const aggregateOrders = <T extends TAggregareOrdersArg>(
+  arr: T[],
+  customerId: number
+): TAggregareOrdersRes | null => {
+  // ...
+  let newObjet: TAggregareOrdersRes | null = {
+    customerId: 0,
+    totalAmount: 0,
+    totalOrders: 0,
+    mostFrequentProduct: { name: "", price: 0, quantity: 0 },
+  };
+
+  let allProductTotalPrice = 0;
+  let customerTotalOrder = 0;
+  let frequentlyBuyProductNames: string[] = [];
+
+  const result: any = {};
+
+  arr.forEach((option) => {
+    if (option.customerId === customerId) {
+      option.items.map((product) => (allProductTotalPrice += product.price));
+      customerTotalOrder += option.items.length;
+      option.items.map((name) => frequentlyBuyProductNames.push(name.name));
+    }
+  });
+
+  frequentlyBuyProductNames.forEach((element) => {
+    result[element] = result[element] ? result[element] + 1 : 1;
+    const frequentlyPurchasedCount: any = Object.values(result);
+    const maxQuantity = Math.max(...frequentlyPurchasedCount);
+
+    let frequentlyPurchasedProduct = Object.keys(result).reduce((a, b) =>
+      result[a] > result[b] ? a : b
+    );
+
+    let frequentlyPurchasedProductTotal = 0;
+
+    arr.forEach((option) => {
+      option.items.forEach((product) => {
+        if (frequentlyPurchasedProduct === product.name) {
+          frequentlyPurchasedProductTotal += product.price;
+        }
+      });
+    });
+
+    newObjet = {
+      customerId: customerId,
+      totalOrders: customerTotalOrder,
+      totalAmount: allProductTotalPrice,
+      mostFrequentProduct: {
+        name: frequentlyPurchasedProduct,
+        price: frequentlyPurchasedProductTotal,
+        quantity: maxQuantity,
+      },
+    };
+  });
+
+  return newObjet;
+};
+
+console.log(aggregateOrders(item, 1));
